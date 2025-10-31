@@ -10,36 +10,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Deploy via SSH
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          DOCKER_COMPOSE_PATH: ${{ secrets.DOCKER_COMPOSE_PATH }}
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy on server
         run: |
-          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-          set -e
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+          cd ${{ secrets.DOCKER_COMPOSE_PATH }} &&
 
-          cd $DOCKER_COMPOSE_PATH
-
-          # Tjek om containeren eksisterer
-          if docker ps -a --format '{{.Names}}' | grep -q 'portfolio-blue'; then
-            echo "Stopping and removing existing portfolio-blue container..."
-            docker stop portfolio-blue
-            docker rm portfolio-blue
+          # Blue/Green logic
+          CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
+          if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
+            NEW_COLOR=green
+          else
+            NEW_COLOR=blue
           fi
 
-          # Byg og start containeren
-          docker-compose build
-          docker-compose up -d
+          echo 'Current live color: ' \$CURRENT_COLOR
+          echo 'New deploy color: ' \$NEW_COLOR
 
-          # Connect containeren til nginx proxy netværket
-          if ! docker network inspect nginx-proxy-manager_default | grep -q 'portfolio-blue'; then
-            docker network connect nginx-proxy-manager_default portfolio-blue
-            echo "Connected portfolio-blue to nginx-proxy-manager_default network."
+          # Build and start new container
+          docker-compose -f docker-compose.yml -p portfolio-\$NEW_COLOR up -d --build
+
+          # Wait a few seconds to ensure container is running
+          sleep 5
+
+          # Stop old container if exists
+          if [ \$(docker ps -a --format '{{.Names}}' | grep -w "portfolio-\$CURRENT_COLOR") ]; then
+            docker stop portfolio-\$CURRENT_COLOR
+            docker rm portfolio-\$CURRENT_COLOR
           fi
 
-          EOF
+          # Rename new container to portfolio-blue for consistency
+          docker rename portfolio-\$NEW_COLOR portfolio-blue || true
+
+          # Connect container to Nginx Proxy Manager network
+          docker network connect nginx-proxy-manager_default portfolio-blue || true
+          "
 
