@@ -10,33 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Setup SSH agent
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Deploy to server
-      env:
-        COLOR: blue          # Kan også være grøn, kan ændres dynamisk
-        PORT: 4000           # Live port
-      run: |
-    ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DOCKER_COMPOSE_PATH }} && docker-compose down && docker-compose up -d --build"
-
-          # Stop container med anden farve
-          if [ "$COLOR" = "blue" ]; then
-            OTHER_COLOR="green"
+      - name: Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+          cd ${{ secrets.DOCKER_COMPOSE_PATH }} &&
+          
+          # Blue/Green logic
+          CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
+          if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
+            NEW_COLOR=green
           else
-            OTHER_COLOR="blue"
+            NEW_COLOR=blue
           fi
           
-          docker-compose -f docker-compose.yml stop portfolio-$OTHER_COLOR || true
+          echo 'Current live color: ' \$CURRENT_COLOR
+          echo 'New deploy color: ' \$NEW_COLOR
+
+          # Build and start new container
+          docker-compose -f docker-compose.yml -p portfolio-\$NEW_COLOR up -d --build
           
-          # Byg og start ny container
-          docker-compose -f docker-compose.yml up -d --build portfolio-$COLOR
+          # Wait a few seconds to ensure container is running
+          sleep 5
           
-          # (Valgfrit) ryd gamle billeder
-          docker image prune -f
-        EOF
+          # Stop old container if exists
+          if [ ! -z \"\$CURRENT_COLOR\" ]; then
+            docker stop portfolio-\$CURRENT_COLOR
+            docker rm portfolio-\$CURRENT_COLOR
+          fi
+          
+          # Optionally, rename new container to portfolio-blue for consistency
+          docker rename portfolio-\$NEW_COLOR portfolio-blue
+          "
+
