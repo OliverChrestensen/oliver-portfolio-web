@@ -23,7 +23,7 @@ jobs:
         COLOR: blue          # Kan også være grøn, kan ændres dynamisk
         PORT: 4000           # Live port
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
           cd ${{ secrets.DOCKER_COMPOSE_PATH }}
           
           # Stop container med anden farve
