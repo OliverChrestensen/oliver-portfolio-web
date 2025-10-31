@@ -8,20 +8,45 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.1
-      with:
-        ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Deploy via SSH
-      run: |
-        ssh -o StrictHostKeyChecking=no root@159.195.11.45 '
-          cd /opt/docker/portfolio &&
-          docker-compose down &&
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          
+          cd $DOCKER_COMPOSE_PATH
+
+          # Determine current live color
+          if [ "$COLOR" = "blue" ]; then
+            NEW_COLOR="green"
+            NEW_PORT=4001
+          else
+            NEW_COLOR="blue"
+            NEW_PORT=4000
+          fi
+
+          export COLOR=$NEW_COLOR
+          export PORT=$NEW_PORT
+
+          # Build and start new container
           docker-compose up -d --build
-        '
+
+          # Connect new container to NPM network
+          docker network connect nginx-proxy-manager_default portfolio-${NEW_COLOR}
+
+          # Switch NPM reverse proxy to new container
+          # (I NPM: opdater Forward Hostname til portfolio-${NEW_COLOR}, port = 3000)
+
+          # Optional: stop old container
+          OLD_COLOR=$( [ "$NEW_COLOR" = "blue" ] && echo "green" || echo "blue" )
+          docker stop portfolio-$OLD_COLOR
+          docker rm portfolio-$OLD_COLOR
+
+          EOF
