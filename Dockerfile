@@ -27,6 +27,6 @@ COPY --from=builder /app/public ./public
 
 # Installer kun production dependencies
 RUN npm install --omit=dev
-
+ 
 CMD ["npm", "start"]
 
