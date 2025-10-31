@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  portfolio:
+    build: .
+    container_name: portfolio-${COLOR}  # bliver portfolio-blue eller portfolio-green
+    ports:
+      - "${PORT}:3000"                  # 3000 inde i container, 4000/4001 ude
+    environment:
+      NODE_ENV: production
+
