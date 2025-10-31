@@ -22,7 +22,8 @@ jobs:
       env:
         COLOR: blue          # Kan også være grøn, kan ændres dynamisk
         PORT: 4000           # Live port
-      run: | ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DOCKER_COMPOSE_PATH }} && docker-compose down && docker-compose up -d --build"
+      run: |
+    ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "cd ${{ secrets.DOCKER_COMPOSE_PATH }} && docker-compose down && docker-compose up -d --build"
 
           # Stop container med anden farve
           if [ "$COLOR" = "blue" ]; then
