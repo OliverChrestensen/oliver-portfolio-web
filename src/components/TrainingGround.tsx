@@ -164,7 +164,7 @@ export default function TrainingGround() {
           </h3>
           <p className="text-gray-300 mb-6 leading-relaxed">
             I constantly train my skills through courses, projects and 
-            experiments. Right now I'm working with Power Apps, Next.js 13 and 
+            experiments. Right now I&apos;m working with Power Apps, Next.js 13 and 
             advanced WooCommerce integrations.
           </p>
           <div className="flex justify-center space-x-4">
