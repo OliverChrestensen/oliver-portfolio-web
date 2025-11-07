@@ -12,11 +12,11 @@ export default function Navigation({ onNavigate, activeSection }: NavigationProp
   const [isOpen, setIsOpen] = useState(false)
 
   const menuItems = [
-    { id: 'tactics', label: 'Tactics Board', icon: '📋', description: 'Min filosofi' },
-    { id: 'squad', label: 'Squad', icon: '👥', description: 'Mine færdigheder' },
-    { id: 'matches', label: 'Matches', icon: '⚔️', description: 'Mine projekter' },
-    { id: 'training', label: 'Training Ground', icon: '��️', description: 'Læring & udvikling' },
-    { id: 'transfer', label: 'Transfer Market', icon: '💸', description: 'Kontakt mig' },
+    { id: 'tactics', label: 'Tactics Board', icon: '📋', description: 'My philosophy' },
+    { id: 'squad', label: 'Squad', icon: '👥', description: 'My skills' },
+    { id: 'matches', label: 'Matches', icon: '⚔️', description: 'My projects' },
+    { id: 'training', label: 'Training Ground', icon: '🏃‍♂️', description: 'Learning & development' },
+    { id: 'transfer', label: 'Transfer Market', icon: '💸', description: 'Contact me' },
   ]
 
   return (

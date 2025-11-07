@@ -49,7 +49,7 @@ export default function Home() {
     {
       id: 'tactics',
       title: 'TACTICS BOARD',
-      subtitle: 'Min filosofi og tilgang',
+      subtitle: 'My philosophy and approach',
       icon: '📋',
       color: 'from-blue-500/30 to-blue-600/30',
       borderColor: 'border-blue-500/50',
@@ -58,7 +58,7 @@ export default function Home() {
     {
       id: 'squad',
       title: 'SQUAD',
-      subtitle: 'Mine færdigheder og teknologier',
+      subtitle: 'My skills and technologies',
       icon: '👥',
       color: 'from-green-500/30 to-green-600/30',
       borderColor: 'border-green-500/50',
@@ -67,7 +67,7 @@ export default function Home() {
     {
       id: 'matches',
       title: 'MATCHES',
-      subtitle: 'Mine projekter og sejre',
+      subtitle: 'My projects and victories',
       icon: '⚽',
       color: 'from-red-500/30 to-red-600/30',
       borderColor: 'border-red-500/50',
@@ -76,7 +76,7 @@ export default function Home() {
     {
       id: 'training',
       title: 'TRAINING GROUND',
-      subtitle: 'Læring og udvikling',
+      subtitle: 'Learning and development',
       icon: '🏃‍♂️',
       color: 'from-purple-500/30 to-purple-600/30',
       borderColor: 'border-purple-500/50',
@@ -85,7 +85,7 @@ export default function Home() {
     {
       id: 'transfer',
       title: 'TRANSFER MARKET',
-      subtitle: 'Kontakt og samarbejde',
+      subtitle: 'Contact and collaboration',
       icon: '🤝',
       color: 'from-yellow-500/30 to-yellow-600/30',
       borderColor: 'border-yellow-500/50',
