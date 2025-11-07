@@ -54,8 +54,8 @@ export default function TransferMarket() {
             Send Transfer Offer
           </h2>
           <p className="text-gray-300 mb-6 leading-relaxed text-lg">
-            I'm open to new challenges and opportunities. 
-            Let's discuss how I can help your team win!
+            I&apos;m open to new challenges and opportunities. 
+            Let&apos;s discuss how I can help your team win!
           </p>
         </div>
 
