@@ -111,7 +111,7 @@ export default function Home() {
                 <motion.div
                   initial={{ x: -100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.8 }}
+                  transition={{ duration: 0.35 }}
                   className="lg:col-span-1 flex flex-col items-center lg:items-start"
                 >
                   {/* Player Image */}
@@ -142,7 +142,7 @@ export default function Home() {
                   <motion.div
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.6 }}
+                    transition={{ delay: 0.15, duration: 0.3 }}
                     className="text-center lg:text-left"
                   >
                     <h1 className="text-3xl lg:text-4xl font-black text-white mb-2 drop-shadow-lg">
@@ -172,7 +172,7 @@ export default function Home() {
                 <motion.div
                   initial={{ x: 100, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.8 }}
+                  transition={{ delay: 0.1, duration: 0.35 }}
                   className="lg:col-span-2"
                 >
                   {/* Smart Grid Layout - handles uneven numbers */}
@@ -188,7 +188,7 @@ export default function Home() {
                           key={item.id}
                           initial={{ y: 50, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.4 + index * 0.1, duration: 0.6 }}
+                          transition={{ delay: 0.2 + index * 0.05, duration: 0.3 }}
                           onClick={() => handleNavigate(item.id)}
                           className={`group cursor-pointer bg-gradient-to-br ${item.color} backdrop-blur-sm rounded-2xl border-2 ${item.borderColor} ${item.hoverColor} p-6 transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-xl ${
                             shouldSpanFull ? 'md:col-span-2' : ''
@@ -222,14 +222,14 @@ export default function Home() {
               <motion.div
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
+                transition={{ delay: 0.5, duration: 0.25 }}
                 className="text-center mt-16"
               >
                 
                 <motion.div
                   className="inline-flex flex-col items-center space-y-2"
                   animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <div className="w-12 h-12 bg-blue-500/30 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-blue-500/50 shadow-lg">
                     {/* Clean Chevron Arrow */}

@@ -67,7 +67,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
           y: currentStep >= 1 ? 0 : 50,
           scale: currentStep >= 1 ? 1 : 0.8
         }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.3 }}
       >
         
       </motion.div>
@@ -80,7 +80,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
           opacity: 1,
           y: 0
         }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.25 }}
       >
         <div className=" px-8 py-6">
           {/* Loading Text */}
@@ -141,7 +141,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
         className="absolute inset-0 bg-white"
         initial={{ opacity: 0 }}
         animate={{ opacity: videoEnded ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.25 }}
       />
     </div>
   )

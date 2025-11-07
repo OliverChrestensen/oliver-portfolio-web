@@ -11,13 +11,13 @@ export default function TransferMarket() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.3 }}
         className="text-center mb-12"
       >
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
         >
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             💸 Transfer Market
@@ -44,7 +44,7 @@ export default function TransferMarket() {
           rotateY: 45,
           rotateX: 15
         }}
-        transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
+        transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
         className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm p-8 rounded-2xl border border-blue-500/30 shadow-2xl"
         
       >
@@ -71,7 +71,7 @@ export default function TransferMarket() {
               x: -50, 
               rotateZ: -5 
             }}
-            transition={{ delay: 0.6, duration: 0.6 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
             className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 p-6 rounded-xl border border-blue-400/30"
           >
             <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
@@ -97,10 +97,10 @@ export default function TransferMarket() {
                     scale: 0.8 
                   }}
                   transition={{ 
-                    delay: 0.7 + index * 0.1, 
-                    duration: 0.4,
+                    delay: 0.35 + index * 0.05, 
+                    duration: 0.2,
                     type: "spring",
-                    stiffness: 200
+                    stiffness: 250
                   }}
                   className="flex items-center space-x-3 p-3 bg-white/10 rounded-lg backdrop-blur-sm"
                 >
@@ -122,7 +122,7 @@ export default function TransferMarket() {
               x: 50, 
               rotateZ: 5 
             }}
-            transition={{ delay: 0.6, duration: 0.6 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
             className="bg-gradient-to-br from-green-500/20 to-green-600/20 p-6 rounded-xl border border-green-400/30"
           >
             <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
@@ -149,10 +149,10 @@ export default function TransferMarket() {
                     scale: 0.8 
                   }}
                   transition={{ 
-                    delay: 0.7 + index * 0.1, 
-                    duration: 0.4,
+                    delay: 0.35 + index * 0.05, 
+                    duration: 0.2,
                     type: "spring",
-                    stiffness: 200
+                    stiffness: 250
                   }}
                   className="flex items-center space-x-3 p-3 bg-white/10 rounded-lg backdrop-blur-sm"
                 >
@@ -179,10 +179,10 @@ export default function TransferMarket() {
               rotate: -180 
             }}
             transition={{ 
-              delay: 0.8, 
-              duration: 0.6,
+              delay: 0.4, 
+              duration: 0.3,
               type: "spring",
-              stiffness: 150
+              stiffness: 200
             }}
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
