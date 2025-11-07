@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.1
+        uses: webfactory/ssh-agent@v0.8.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -23,7 +23,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
           cd ${{ secrets.DOCKER_COMPOSE_PATH }} &&
 
-          # Blue/Green logic
+          echo '--- Starting Blue/Green deployment ---'
+
+          # Find current live color
           CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
           if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
             NEW_COLOR=green
@@ -40,16 +42,31 @@ jobs:
           # Wait a few seconds to ensure container is running
           sleep 5
 
-          # Stop old container if exists
-          if [ \$(docker ps -a --format '{{.Names}}' | grep -w "portfolio-\$CURRENT_COLOR") ]; then
-            docker stop portfolio-\$CURRENT_COLOR
-            docker rm portfolio-\$CURRENT_COLOR
+          # Stop and remove old container if it exists
+          if [ ! -z \"\$CURRENT_COLOR\" ] && docker ps -a --format '{{.Names}}' | grep -q \"portfolio-\$CURRENT_COLOR\"; then
+            echo 'Stopping old container portfolio-'\"\$CURRENT_COLOR\"
+            docker stop portfolio-\$CURRENT_COLOR || true
+            docker rm portfolio-\$CURRENT_COLOR || true
+          else
+            echo 'No old container found, skipping stop/remove step.'
           fi
 
-          # Rename new container to portfolio-blue for consistency
-          docker rename portfolio-\$NEW_COLOR portfolio-blue || true
+          # Rename new container for consistency
+          if docker ps -a --format '{{.Names}}' | grep -q \"portfolio-blue\"; then
+            echo 'Container portfolio-blue already exists, skipping rename.'
+          else
+            echo 'Renaming new container to portfolio-blue'
+            docker rename portfolio-\$NEW_COLOR portfolio-blue || true
+          fi
 
-          # Connect container to Nginx Proxy Manager network
-          docker network connect nginx-proxy-manager_default portfolio-blue || true
+          # Connect to Nginx Proxy Manager network if it exists
+          if docker network inspect nginx-proxy-manager_default >/dev/null 2>&1; then
+            echo 'Connecting portfolio-blue to nginx-proxy-manager_default network...'
+            docker network connect nginx-proxy-manager_default portfolio-blue || true
+          else
+            echo 'Network nginx-proxy-manager_default not found, skipping network connect.'
+          fi
+
+          echo '--- Deployment complete ---'
           "
 
