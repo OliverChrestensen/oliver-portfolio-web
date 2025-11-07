@@ -9,9 +9,9 @@ services:
     environment:
       NODE_ENV: production
     networks:
-      - npm-network
+      - nginx-proxy-manager_default
 
 networks:
-  npm-network:
+  nginx-proxy-manager_default:
     external: true
 
