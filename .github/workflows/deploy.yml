@@ -1,50 +1,61 @@
-- name: Deploy on server
-  run: |
-    ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-    cd ${{ secrets.DOCKER_COMPOSE_PATH }}
+name: Deploy to Server
 
-    echo '--- Pulling latest changes from GitHub ---'
-    git fetch origin main
-    git reset --hard origin/main
+on:
+  push:
+    branches:
+      - main
 
-    # Determine which color is live
-    CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
-    if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
-      NEW_COLOR=green
-    else
-      NEW_COLOR=blue
-    fi
-    echo 'Current live color:' \$CURRENT_COLOR
-    echo 'New deploy color:' \$NEW_COLOR
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy on server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << EOF
+          cd ${{ secrets.DOCKER_COMPOSE_PATH }}
 
-    # Stop and remove old build container if exists (cleanup)
-    docker rm -f portfolio-\$NEW_COLOR || true
+          echo '--- Pulling latest changes from GitHub ---'
+          git fetch origin main
+          git reset --hard origin/main
 
-    # Build and start new container
-    docker-compose -p portfolio-\$NEW_COLOR up -d --build || exit 1
+          # Determine which color is live
+          CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
+          if [ "\$CURRENT_COLOR" = "blue" ]; then
+            NEW_COLOR=green
+          else
+            NEW_COLOR=blue
+          fi
+          echo 'Current live color:' \$CURRENT_COLOR
+          echo 'New deploy color:' \$NEW_COLOR
 
-    # Wait a bit for startup
-    sleep 10
+          # Stop and remove old build container if exists (cleanup)
+          docker rm -f portfolio-\$NEW_COLOR || true
 
-    # Check if container started successfully
-    if docker ps --format '{{.Names}}' | grep -q 'portfolio-\$NEW_COLOR'; then
-      echo 'New container started successfully.'
-    else
-      echo 'ERROR: New container did not start properly, keeping old version.'
-      exit 1
-    fi
+          # Build and start new container
+          docker-compose -p portfolio-\$NEW_COLOR up -d --build || exit 1
 
-    # Stop and remove old live container if exists
-    if [ ! -z \"\$CURRENT_COLOR\" ]; then
-      echo 'Stopping old container portfolio-'\$CURRENT_COLOR
-      docker rm -f portfolio-\$CURRENT_COLOR || true
-    fi
+          # Wait a bit for startup
+          sleep 10
 
-    # Rename new container to blue (stable name)
-    docker rename portfolio-\$NEW_COLOR portfolio-blue || true
+          # Check if container started successfully
+          if docker ps --format '{{.Names}}' | grep -q "portfolio-\$NEW_COLOR"; then
+            echo 'New container started successfully.'
+          else
+            echo 'ERROR: New container did not start properly, keeping old version.'
+            exit 1
+          fi
 
-    # Connect to proxy network
-    docker network connect nginx-proxy-manager_default portfolio-blue || true
+          # Stop and remove old live container if exists
+          if [ ! -z "\$CURRENT_COLOR" ]; then
+            echo 'Stopping old container portfolio-'\$CURRENT_COLOR
+            docker rm -f portfolio-\$CURRENT_COLOR || true
+          fi
 
-    echo '--- Deployment complete ---'
-    "
+          # Rename new container to blue (stable name)
+          docker rename portfolio-\$NEW_COLOR portfolio-blue || true
+
+          # Connect to proxy network
+          docker network connect nginx-proxy-manager_default portfolio-blue || true
+
+          echo '--- Deployment complete ---'
+          EOF
