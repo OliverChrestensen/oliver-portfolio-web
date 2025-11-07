@@ -1,72 +1,50 @@
-name: Deploy Portfolio
+- name: Deploy on server
+  run: |
+    ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+    cd ${{ secrets.DOCKER_COMPOSE_PATH }}
 
-on:
-  push:
-    branches:
-      - main
+    echo '--- Pulling latest changes from GitHub ---'
+    git fetch origin main
+    git reset --hard origin/main
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    # Determine which color is live
+    CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
+    if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
+      NEW_COLOR=green
+    else
+      NEW_COLOR=blue
+    fi
+    echo 'Current live color:' \$CURRENT_COLOR
+    echo 'New deploy color:' \$NEW_COLOR
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    # Stop and remove old build container if exists (cleanup)
+    docker rm -f portfolio-\$NEW_COLOR || true
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    # Build and start new container
+    docker-compose -p portfolio-\$NEW_COLOR up -d --build || exit 1
 
-      - name: Deploy on server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-          cd ${{ secrets.DOCKER_COMPOSE_PATH }} &&
+    # Wait a bit for startup
+    sleep 10
 
-          echo '--- Starting Blue/Green deployment ---'
+    # Check if container started successfully
+    if docker ps --format '{{.Names}}' | grep -q 'portfolio-\$NEW_COLOR'; then
+      echo 'New container started successfully.'
+    else
+      echo 'ERROR: New container did not start properly, keeping old version.'
+      exit 1
+    fi
 
-          # Find current live color
-          CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
-          if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
-            NEW_COLOR=green
-          else
-            NEW_COLOR=blue
-          fi
+    # Stop and remove old live container if exists
+    if [ ! -z \"\$CURRENT_COLOR\" ]; then
+      echo 'Stopping old container portfolio-'\$CURRENT_COLOR
+      docker rm -f portfolio-\$CURRENT_COLOR || true
+    fi
 
-          echo 'Current live color: ' \$CURRENT_COLOR
-          echo 'New deploy color: ' \$NEW_COLOR
+    # Rename new container to blue (stable name)
+    docker rename portfolio-\$NEW_COLOR portfolio-blue || true
 
-          # Build and start new container
-          docker-compose -f docker-compose.yml -p portfolio-\$NEW_COLOR up -d --build
+    # Connect to proxy network
+    docker network connect nginx-proxy-manager_default portfolio-blue || true
 
-          # Wait a few seconds to ensure container is running
-          sleep 5
-
-          # Stop and remove old container if it exists
-          if [ ! -z \"\$CURRENT_COLOR\" ] && docker ps -a --format '{{.Names}}' | grep -q \"portfolio-\$CURRENT_COLOR\"; then
-            echo 'Stopping old container portfolio-'\"\$CURRENT_COLOR\"
-            docker stop portfolio-\$CURRENT_COLOR || true
-            docker rm portfolio-\$CURRENT_COLOR || true
-          else
-            echo 'No old container found, skipping stop/remove step.'
-          fi
-
-          # Rename new container for consistency
-          if docker ps -a --format '{{.Names}}' | grep -q \"portfolio-blue\"; then
-            echo 'Container portfolio-blue already exists, skipping rename.'
-          else
-            echo 'Renaming new container to portfolio-blue'
-            docker rename portfolio-\$NEW_COLOR portfolio-blue || true
-          fi
-
-          # Connect to Nginx Proxy Manager network if it exists
-          if docker network inspect nginx-proxy-manager_default >/dev/null 2>&1; then
-            echo 'Connecting portfolio-blue to nginx-proxy-manager_default network...'
-            docker network connect nginx-proxy-manager_default portfolio-blue || true
-          else
-            echo 'Network nginx-proxy-manager_default not found, skipping network connect.'
-          fi
-
-          echo '--- Deployment complete ---'
-          "
-
+    echo '--- Deployment complete ---'
+    "
