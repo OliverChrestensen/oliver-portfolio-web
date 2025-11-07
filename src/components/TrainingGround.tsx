@@ -50,13 +50,13 @@ export default function TrainingGround() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.3 }}
         className="text-center mb-12"
       >
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
         >
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             🏟️ Training Ground
@@ -87,34 +87,34 @@ export default function TrainingGround() {
               rotateZ: -10
             }}
             transition={{ 
-              delay: 0.3 + index * 0.1, 
-              duration: 0.7,
+              delay: 0.15 + index * 0.05, 
+              duration: 0.35,
               type: "spring",
-              stiffness: 80,
-              damping: 12
+              stiffness: 150,
+              damping: 15
             }}
-            className={`bg-gradient-to-br ${area.color} p-6 rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300 shadow-xl`}
-            whileHover={{ 
-              scale: 1.05,
-              rotateZ: 2,
-              y: -5,
-              boxShadow: "0 25px 50px rgba(0,0,0,0.4)"
-            }}
+            className={`group bg-gradient-to-br ${area.color} p-6 rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-xl relative`}
           >
-            <h3 className="text-xl font-bold text-white mb-2 flex items-center">
-              <span className="mr-2">📚</span>
-              {area.title}
-            </h3>
-            <p className="text-white/80 text-sm mb-4 leading-relaxed">{area.description}</p>
-            
-            <div className="mb-4">
+            {/* Enhanced Hover Effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              initial={false}
+            />
+            <div className="relative z-10">
+              <h3 className="text-xl font-bold text-white mb-2 flex items-center">
+                <span className="mr-2">📚</span>
+                {area.title}
+              </h3>
+              <p className="text-white/80 text-sm mb-4 leading-relaxed">{area.description}</p>
+              
+              <div className="mb-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-white text-sm font-medium">Progress</span>
                 <motion.span 
                   className="text-white text-sm font-bold"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1, duration: 0.4 }}
+                  transition={{ delay: 0.25 + index * 0.05, duration: 0.3 }}
                 >
                   {area.progress}%
                 </motion.span>
@@ -131,12 +131,13 @@ export default function TrainingGround() {
                     scaleX: 0
                   }}
                   transition={{ 
-                    delay: 0.6 + index * 0.1, 
-                    duration: 1.2,
+                    delay: 0.3 + index * 0.05, 
+                    duration: 0.5,
                     ease: "easeOut"
                   }}
                 />
               </div>
+            </div>
             </div>
           </motion.div>
         ))}
@@ -153,7 +154,7 @@ export default function TrainingGround() {
           scale: 0.8, 
           rotateX: 45 
         }}
-        transition={{ delay: 0.8, duration: 0.8 }}
+        transition={{ delay: 0.4, duration: 0.4 }}
         className="mt-12 text-center"
       >
         <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm p-8 rounded-2xl border border-blue-500/30 shadow-2xl">
@@ -181,10 +182,10 @@ export default function TrainingGround() {
                   rotate: 180 
                 }}
                 transition={{ 
-                  delay: 1 + index * 0.15, 
-                  duration: 0.5,
+                  delay: 0.5 + index * 0.08, 
+                  duration: 0.25,
                   type: "spring",
-                  stiffness: 150
+                  stiffness: 200
                 }}
                 className="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-full border border-blue-400/30 backdrop-blur-sm"
               >

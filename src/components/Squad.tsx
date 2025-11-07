@@ -20,13 +20,13 @@ export default function Squad() {
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.3 }}
         className="text-center mb-12"
       >
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={isInView ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
         >
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             👥 Squad
@@ -52,28 +52,27 @@ export default function Squad() {
               rotate: -180 
             }}
             transition={{ 
-              delay: 0.3 + index * 0.15, 
-              duration: 0.8,
+              delay: 0.15 + index * 0.06, 
+              duration: 0.45,
               type: "spring",
-              stiffness: 100,
-              damping: 10
+              stiffness: 160,
+              damping: 14
             }}
-            className={`bg-gradient-to-br ${player.color} p-6 rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300 shadow-xl`}
-            whileHover={{ 
-              scale: 1.05,
-              rotateY: 10,
-              rotateX: 5,
-              boxShadow: "0 25px 50px rgba(0,0,0,0.4)"
-            }}
+            className={`group bg-gradient-to-br ${player.color} p-6 rounded-2xl border border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-xl relative`}
           >
-            <div className="text-center">
+            {/* Enhanced Hover Effect */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              initial={false}
+            />
+            <div className="text-center relative z-10">
               <motion.div 
                 className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-3xl font-bold text-white mx-auto mb-4 border-2 border-white/30"
                 whileHover={{ 
                   rotate: 360,
                   scale: 1.2
                 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.2 }}
               >
                 {player.skill.charAt(0)}
               </motion.div>
@@ -85,7 +84,7 @@ export default function Squad() {
                     className="h-full bg-white rounded-full"
                     initial={{ width: 0 }}
                     animate={isInView ? { width: `${player.rating}%` } : { width: 0 }}
-                    transition={{ delay: 0.8 + index * 0.15, duration: 1.2, ease: "easeOut" }}
+                    transition={{ delay: 0.4 + index * 0.08, duration: 0.5, ease: "easeOut" }}
                   />
                 </div>
                 <span className="text-white font-bold text-lg">{player.rating}</span>

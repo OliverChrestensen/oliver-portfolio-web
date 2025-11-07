@@ -92,7 +92,7 @@ export default function Navigation({ onNavigate, activeSection }: NavigationProp
           className="md:hidden mt-4"
           initial={false}
           animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
           <div className="space-y-2 pb-4">
             {menuItems.map((item) => (
