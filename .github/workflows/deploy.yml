@@ -19,77 +19,59 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy on server
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          DOCKER_COMPOSE_PATH: ${{ secrets.DOCKER_COMPOSE_PATH }}
         run: |
-          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
-          set -e
-
-          echo "Entering deploy path: $DOCKER_COMPOSE_PATH"
-          cd "$DOCKER_COMPOSE_PATH"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+          cd ${{ secrets.DOCKER_COMPOSE_PATH }} &&
 
           echo '--- Syncing repo with origin/main ---'
           git fetch origin main
           git reset --hard origin/main
 
-          echo '--- Determine current live color ---'
-          # Find currently running portfolio container name (portfolio-blue or portfolio-green)
-          CURRENT_COLOR=$(docker ps --format '{{.Names}}' | grep -E '^portfolio-(blue|green)$' | head -n 1 | sed 's/portfolio-//')
-          if [ "$CURRENT_COLOR" = "blue" ]; then
+          
+          echo '--- Starting Blue/Green deployment ---'
+
+          # Find current live color
+          CURRENT_COLOR=\$(docker ps --format '{{.Names}}' | grep 'portfolio-' | head -n 1 | sed 's/portfolio-//')
+          if [ \"\$CURRENT_COLOR\" = \"blue\" ]; then
             NEW_COLOR=green
           else
             NEW_COLOR=blue
           fi
 
-          echo "Current live color: ${CURRENT_COLOR:-<none>}"
-          echo "New deploy color: $NEW_COLOR"
+          echo 'Current live color: ' \$CURRENT_COLOR
+          echo 'New deploy color: ' \$NEW_COLOR
 
-          # Ensure no leftover container with the new color (avoid name conflicts)
-          echo "Removing any leftover container named portfolio-$NEW_COLOR (if exists)..."
-          docker rm -f "portfolio-$NEW_COLOR" >/dev/null 2>&1 || true
+          # Build and start new container
+          docker-compose -f docker-compose.yml -p portfolio-\$NEW_COLOR up -d --build
 
-          # Build and start the new container using a project name derived from color
-          echo "Building and starting new container: portfolio-$NEW_COLOR"
-          docker-compose -f docker-compose.yml -p "portfolio-$NEW_COLOR" up -d --build
+          # Wait a few seconds to ensure container is running
+          sleep 5
 
-          # Wait a bit so container has time to start
-          sleep 8
-
-          # Verify the new container is running
-          if docker ps --format '{{.Names}}' | grep -q "^portfolio-$NEW_COLOR\$"; then
-            echo "New container portfolio-$NEW_COLOR started successfully."
+          # Stop and remove old container if it exists
+          if [ ! -z \"\$CURRENT_COLOR\" ] && docker ps -a --format '{{.Names}}' | grep -q \"portfolio-\$CURRENT_COLOR\"; then
+            echo 'Stopping old container portfolio-'\"\$CURRENT_COLOR\"
+            docker stop portfolio-\$CURRENT_COLOR || true
+            docker rm portfolio-\$CURRENT_COLOR || true
           else
-            echo "ERROR: New container portfolio-$NEW_COLOR did not start. Aborting deploy and leaving current live running."
-            # Optional: you could add rollback logic here.
-            exit 1
+            echo 'No old container found, skipping stop/remove step.'
           fi
 
-          # Stop and remove old container if it exists (only if different and exists)
-          if [ -n "$CURRENT_COLOR" ] && docker ps -a --format '{{.Names}}' | grep -q "^portfolio-$CURRENT_COLOR\$"; then
-            echo "Stopping and removing old container portfolio-$CURRENT_COLOR"
-            docker rm -f "portfolio-$CURRENT_COLOR" || true
+          # Rename new container for consistency
+          if docker ps -a --format '{{.Names}}' | grep -q \"portfolio-blue\"; then
+            echo 'Container portfolio-blue already exists, skipping rename.'
           else
-            echo "No old container to remove (first deploy or not found)."
+            echo 'Renaming new container to portfolio-blue'
+            docker rename portfolio-\$NEW_COLOR portfolio-blue || true
           fi
 
-          # Rename new container to stable name portfolio-blue for consistent reference
-          # Only rename if portfolio-blue does not already exist (avoid conflicts)
-          if docker ps -a --format '{{.Names}}' | grep -q "^portfolio-blue\$"; then
-            echo "portfolio-blue already exists; skipping rename."
-          else
-            echo "Renaming portfolio-$NEW_COLOR -> portfolio-blue"
-            docker rename "portfolio-$NEW_COLOR" "portfolio-blue" || true
-          fi
-
-          # Connect to nginx-proxy-manager_default network if it exists
+          # Connect to Nginx Proxy Manager network if it exists
           if docker network inspect nginx-proxy-manager_default >/dev/null 2>&1; then
-            echo "Connecting portfolio-blue to nginx-proxy-manager_default network..."
+            echo 'Connecting portfolio-blue to nginx-proxy-manager_default network...'
             docker network connect nginx-proxy-manager_default portfolio-blue || true
           else
-            echo "Network nginx-proxy-manager_default not found; skipping network connect."
+            echo 'Network nginx-proxy-manager_default not found, skipping network connect.'
           fi
 
-          echo '--- Deployment finished successfully ---'
-          EOF
+          echo '--- Deployment complete ---'
+          "
+
