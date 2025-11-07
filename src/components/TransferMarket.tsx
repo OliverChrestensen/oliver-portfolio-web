@@ -22,7 +22,7 @@ export default function TransferMarket() {
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             💸 Transfer Market
           </h1>
-          <p className="text-xl text-blue-300 font-semibold">Vil du have mig på dit hold?</p>
+          <p className="text-xl text-blue-300 font-semibold">Want me on your team?</p>
         </motion.div>
       </motion.div>
 
@@ -54,8 +54,8 @@ export default function TransferMarket() {
             Send Transfer Offer
           </h2>
           <p className="text-gray-300 mb-6 leading-relaxed text-lg">
-            Jeg er åben for nye udfordringer og muligheder. 
-            Lad os diskutere hvordan jeg kan hjælpe dit hold med at vinde!
+            I'm open to new challenges and opportunities. 
+            Let's discuss how I can help your team win!
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function TransferMarket() {
           >
             <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
               <span className="mr-2">📧</span>
-              Kontakt Information
+              Contact Information
             </h3>
             <div className="space-y-4">
               {[
@@ -127,7 +127,7 @@ export default function TransferMarket() {
           >
             <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
               <span className="mr-2">⚽</span>
-              Mine Styrker
+              My Strengths
             </h3>
             <div className="space-y-3">
               {[

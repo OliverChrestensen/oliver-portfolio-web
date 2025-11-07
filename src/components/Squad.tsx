@@ -31,7 +31,7 @@ export default function Squad() {
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             👥 Squad
           </h1>
-          <p className="text-xl text-blue-300 font-semibold">Mine færdigheder som spillere</p>
+          <p className="text-xl text-blue-300 font-semibold">My skills as players</p>
         </motion.div>
       </motion.div>
 

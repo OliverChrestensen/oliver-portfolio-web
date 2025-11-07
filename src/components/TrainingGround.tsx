@@ -9,37 +9,37 @@ export default function TrainingGround() {
   const learningAreas = [
     {
       title: 'Power Platform',
-      description: 'Power Apps, Power Automate og Power BI',
+      description: 'Power Apps, Power Automate and Power BI',
       progress: 75,
       color: 'from-blue-500 to-blue-600'
     },
     {
       title: 'Next.js 13+',
-      description: 'App Router, Server Components og moderne React patterns',
+      description: 'App Router, Server Components and modern React patterns',
       progress: 85,
       color: 'from-green-500 to-green-600'
     },
     {
       title: 'WooCommerce',
-      description: 'Avancerede integrationer og custom plugins',
+      description: 'Advanced integrations and custom plugins',
       progress: 70,
       color: 'from-purple-500 to-purple-600'
     },
     {
       title: 'TypeScript',
-      description: 'Advanced types, generics og type safety',
+      description: 'Advanced types, generics and type safety',
       progress: 90,
       color: 'from-blue-600 to-blue-700'
     },
     {
       title: 'Cloud Architecture',
-      description: 'Azure, AWS og serverless patterns',
+      description: 'Azure, AWS and serverless patterns',
       progress: 60,
       color: 'from-orange-500 to-orange-600'
     },
     {
       title: 'UI/UX Design',
-      description: 'Framer Motion, Tailwind og moderne design patterns',
+      description: 'Framer Motion, Tailwind and modern design patterns',
       progress: 80,
       color: 'from-pink-500 to-pink-600'
     }
@@ -61,7 +61,7 @@ export default function TrainingGround() {
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             🏟️ Training Ground
           </h1>
-          <p className="text-xl text-blue-300 font-semibold">Læring og udvikling af færdigheder</p>
+          <p className="text-xl text-blue-300 font-semibold">Learning and skill development</p>
         </motion.div>
       </motion.div>
 
@@ -163,9 +163,9 @@ export default function TrainingGround() {
             Current Focus
           </h3>
           <p className="text-gray-300 mb-6 leading-relaxed">
-            Jeg træner konstant mine færdigheder gennem kurser, projekter og 
-            eksperimenter. Lige nu arbejder jeg med Power Apps, Next.js 13 og 
-            avancerede WooCommerce integrationer.
+            I constantly train my skills through courses, projects and 
+            experiments. Right now I'm working with Power Apps, Next.js 13 and 
+            advanced WooCommerce integrations.
           </p>
           <div className="flex justify-center space-x-4">
             {['Continuous Learning', 'Hands-on Projects', 'Industry Best Practices'].map((tag, index) => (

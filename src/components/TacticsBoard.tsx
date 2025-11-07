@@ -22,7 +22,7 @@ export default function TacticsBoard() {
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             📋 Tactics Board
           </h1>
-          <p className="text-xl text-blue-300 font-semibold">Min udviklingsfilosofi</p>
+          <p className="text-xl text-blue-300 font-semibold">My development philosophy</p>
         </motion.div>
       </motion.div>
 
@@ -45,12 +45,12 @@ export default function TacticsBoard() {
             transition={{ duration: 0.2 }}
           >
             <span className="mr-3 text-3xl">⚡</span>
-            Offensiv Tilgang
+            Offensive Approach
           </motion.h3>
             <p className="text-gray-300 leading-relaxed">
-              Jeg spiller med en offensiv tilgang til udvikling: hurtig eksekvering,
-              solid arkitektur og et øje for detaljen. Min filosofi handler om at bygge
-              løsninger der både er funktionelle og smukke.
+              I play with an offensive approach to development: fast execution,
+              solid architecture and an eye for detail. My philosophy is about building
+              solutions that are both functional and beautiful.
             </p>
           </div>
         </motion.div>
@@ -73,12 +73,12 @@ export default function TacticsBoard() {
             transition={{ duration: 0.2 }}
           >
             <span className="mr-3 text-3xl">🎯</span>
-            Strategisk Tænkning
+            Strategic Thinking
           </motion.h3>
             <p className="text-gray-300 leading-relaxed">
-              Hver linje kode er et taktisk træk. Jeg planlægger mine projekter som en
-              manager planlægger en kamp - med backup-planer, fleksibilitet og fokus på
-              det endelige mål.
+              Every line of code is a tactical move. I plan my projects like a
+              manager plans a match - with backup plans, flexibility and focus on
+              the end goal.
             </p>
           </div>
         </motion.div>

@@ -9,7 +9,7 @@ export default function Matches() {
   const projects = [
     {
       title: 'Ownersclub.dk',
-      description: 'E-commerce platform med React og WooCommerce API integration',
+      description: 'E-commerce platform with React and WooCommerce API integration',
       technologies: ['React', 'WooCommerce', 'Node.js', 'MySQL'],
       result: 'Victory 🏆',
       status: 'completed',
@@ -17,7 +17,7 @@ export default function Matches() {
     },
     {
       title: 'CRM Automation',
-      description: 'Power Automate + Custom APIs for effektivisering af workflows',
+      description: 'Power Automate + Custom APIs for workflow optimization',
       technologies: ['Power Automate', 'Power Apps', 'Azure', 'SharePoint'],
       result: 'Clean Sheet 🧤',
       status: 'completed',
@@ -25,7 +25,7 @@ export default function Matches() {
     },
     {
       title: 'Portfolio Website',
-      description: 'Moderne portfolio med Next.js og Framer Motion animationer',
+      description: 'Modern portfolio with Next.js and Framer Motion animations',
       technologies: ['Next.js', 'TypeScript', 'Tailwind', 'Framer Motion'],
       result: 'In Progress ⚽',
       status: 'ongoing',
@@ -49,7 +49,7 @@ export default function Matches() {
           <h1 className="text-6xl font-black text-white mb-4 bg-gradient-to-r from-blue-400 via-white to-blue-400 bg-clip-text text-transparent">
             ⚔️ Matches
           </h1>
-          <p className="text-xl text-blue-300 font-semibold">Mine projekter og kampresultater</p>
+          <p className="text-xl text-blue-300 font-semibold">My projects and match results</p>
         </motion.div>
       </motion.div>
 
