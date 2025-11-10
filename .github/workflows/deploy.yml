@@ -10,36 +10,86 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.8.0
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy via SSH
+      - name: Deploy on server
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          DOCKER_COMPOSE_PATH: ${{ secrets.DOCKER_COMPOSE_PATH }}
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << 'EOF'
-            cd /opt/docker/portfolio
+          ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'EOF'
+          set -e
 
-            echo "--- Pulling latest code ---"
-            git pull origin main
+          cd "$DOCKER_COMPOSE_PATH" || { echo "Path not found: $DOCKER_COMPOSE_PATH"; exit 1; }
 
-            echo "--- Building new Docker image ---"
-            docker build -t portfolio-blue-portfolio .
+          echo '--- Starting Blue/Green deployment ---'
 
-            echo "--- Stopping old container (if any) ---"
-            docker stop portfolio-blue || true
-            docker rm portfolio-blue || true
+          # Detect current live color
+          CURRENT_COLOR=$(docker ps --format '{{.Names}}' | grep '^portfolio-' | head -n 1 | sed 's/portfolio-//')
+          if [ "$CURRENT_COLOR" = "blue" ]; then
+            NEW_COLOR=green
+          else
+            NEW_COLOR=blue
+          fi
 
-            echo "--- Running new container ---"
-            docker run -d \
-              --name portfolio-blue \
-              --network nginx-proxy-manager_default \
-              -p 4000:3000 \
-              portfolio-blue-portfolio
+          echo "Current live color: ${CURRENT_COLOR:-<none>}"
+          echo "New deploy color: $NEW_COLOR"
 
-            echo "--- Deployment complete ---"
-            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+          # Remove possible leftover container with the target name to avoid conflicts
+          docker rm -f "portfolio-$NEW_COLOR" >/dev/null 2>&1 || true
+          docker rm -f "portfolio-$NEW_COLOR-portfolio" >/dev/null 2>&1 || true
+          docker rm -f portfolio-blue >/dev/null 2>&1 || true
+
+          # Build and start new container via docker-compose project name
+          docker-compose -f docker-compose.yml -p "portfolio-$NEW_COLOR" up -d --build
+
+          # Wait for the new container to appear (timeout)
+          echo "Waiting for new container to start..."
+          for i in {1..30}; do
+            if docker ps --format '{{.Names}}' | grep -q "^portfolio-$NEW_COLOR-portfolio\$"; then
+              echo "New container found: portfolio-$NEW_COLOR-portfolio"
+              break
+            fi
+            sleep 1
+          done
+
+          if ! docker ps --format '{{.Names}}' | grep -q "^portfolio-$NEW_COLOR-portfolio\$"; then
+            echo "ERROR: new container did not start: portfolio-$NEW_COLOR-portfolio"
+            docker-compose -f docker-compose.yml -p "portfolio-$NEW_COLOR" logs --no-color || true
+            exit 1
+          fi
+
+          # Stop and remove old container (if exists)
+          if [ -n "$CURRENT_COLOR" ] && docker ps -a --format '{{.Names}}' | grep -q "^portfolio-$CURRENT_COLOR-portfolio\$"; then
+            echo "Stopping old container portfolio-$CURRENT_COLOR-portfolio"
+            docker rm -f "portfolio-$CURRENT_COLOR-portfolio" || true
+          fi
+
+          # Rename new container (compose names containers as project-service)
+          NEW_FULLNAME="portfolio-$NEW_COLOR-portfolio"
+          if docker ps -a --format '{{.Names}}' | grep -q "^portfolio-blue\$"; then
+            echo "portfolio-blue already exists, removing to avoid rename conflict"
+            docker rm -f portfolio-blue || true
+          fi
+
+          echo "Renaming $NEW_FULLNAME -> portfolio-blue"
+          docker rename "$NEW_FULLNAME" "portfolio-blue" || { echo "Rename failed"; docker ps -a --format '{{.Names}}'; exit 1; }
+
+          # Connect to proxy network if available
+          if docker network inspect nginx-proxy-manager_default >/dev/null 2>&1; then
+            docker network connect nginx-proxy-manager_default portfolio-blue || true
+            echo "Connected portfolio-blue to nginx-proxy-manager_default"
+          else
+            echo "Network nginx-proxy-manager_default not found, skipping network connect."
+          fi
+
+          echo '--- Deployment complete ---'
+          docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
           EOF
