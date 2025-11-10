@@ -13,8 +13,19 @@ import TrainingGround from '../components/TrainingGround'
 import TransferMarket from '../components/TransferMarket'
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        return sessionStorage.getItem('hasSeenLoader') !== 'true'
+      } catch {
+        return true
+      }
+    }
+    return true
+  })
   const [activeSection, setActiveSection] = useState('home')
+
+  // Note: initial isLoading is derived from sessionStorage in the useState initializer above.
 
   const handleNavigate = (section: string) => {
     const element = document.getElementById(section)
@@ -95,7 +106,20 @@ export default function Home() {
 
   return (
     <>
-      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+      {isLoading && (
+        <LoadingScreen
+          onComplete={() => {
+            try {
+              if (typeof window !== 'undefined') {
+                sessionStorage.setItem('hasSeenLoader', 'true')
+              }
+            } catch {
+              // ignore storage errors
+            }
+            setIsLoading(false)
+          }}
+        />
+      )}
 
       {!isLoading && (
         <>
