@@ -166,8 +166,8 @@ export default function TransferMarket() {
 
         <div className="text-center">
           <motion.a
-            href="mailto:oliver@example.com"
-            className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 rounded-lg font-bold text-xl shadow-lg transition-all duration-300 border border-blue-400/30"
+            href="mailto:oliver.chrestensen@hotmail.com"
+            className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 rounded-lg font-bold text-xl shadow-lg border border-blue-400/30"
             initial={{ opacity: 0, scale: 0, rotate: -180 }}
             animate={isInView ? { 
               opacity: 1, 
@@ -182,10 +182,17 @@ export default function TransferMarket() {
               delay: 0.4, 
               duration: 0.3,
               type: "spring",
-              stiffness: 200
+              stiffness: 200,
+              scale: { duration: 0.1, ease: "easeOut" }
             }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ 
+              scale: 1.05,
+              transition: { duration: 0.1, ease: "easeOut" }
+            }}
+            whileTap={{ 
+              scale: 0.98,
+              transition: { duration: 0.1 }
+            }}
           >
             Send Transfer Offer
           </motion.a>

@@ -11,6 +11,7 @@ import Squad from '../components/Squad'
 import Matches from '../components/Matches'
 import TrainingGround from '../components/TrainingGround'
 import TransferMarket from '../components/TransferMarket'
+import CV from '../components/CV'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(() => {
@@ -37,7 +38,7 @@ export default function Home() {
   // Track which section is currently in view
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'tactics', 'squad', 'matches', 'training', 'transfer']
+      const sections = ['home', 'tactics', 'squad', 'matches', 'training', 'cv', 'transfer']
       const scrollPosition = window.scrollY + 100
 
       for (const section of sections) {
@@ -94,6 +95,15 @@ export default function Home() {
       hoverColor: 'hover:border-purple-400/70'
     },
     {
+      id: 'cv',
+      title: 'CV & KARRIERE',
+      subtitle: 'Min professionelle rejse',
+      icon: '📄',
+      color: 'from-indigo-500/30 to-indigo-600/30',
+      borderColor: 'border-indigo-500/50',
+      hoverColor: 'hover:border-indigo-400/70'
+    },
+    {
       id: 'transfer',
       title: 'TRANSFER MARKET',
       subtitle: 'Contact and collaboration',
@@ -127,7 +137,7 @@ export default function Home() {
           {/*<Cursor />*/}
           
           {/* FIFA-Style Home Section */}
-          <section id="home" className="min-h-screen flex items-center justify-center relative z-10 px-6">
+          <section id="home" className="flex items-center justify-center relative z-10 px-6 py-20">
             <div className="w-full max-w-7xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
                 
@@ -280,27 +290,32 @@ export default function Home() {
           </section>
 
           {/* Tactics Board Section */}
-          <section id="tactics" className="min-h-screen flex items-center justify-center relative z-10">
+          <section id="tactics" className="flex items-center justify-center relative z-10 py-20">
             <TacticsBoard />
           </section>
 
           {/* Squad Section */}
-          <section id="squad" className="min-h-screen flex items-center justify-center relative z-10">
+          <section id="squad" className="flex items-center justify-center relative z-10 py-20">
             <Squad />
           </section>
 
           {/* Matches Section */}
-          <section id="matches" className="min-h-screen flex items-center justify-center relative z-10">
+          <section id="matches" className="flex items-center justify-center relative z-10 py-20">
             <Matches />
           </section>
 
           {/* Training Ground Section */}
-          <section id="training" className="min-h-screen flex items-center justify-center relative z-10">
+          <section id="training" className="flex items-center justify-center relative z-10 py-20">
             <TrainingGround />
           </section>
 
+          {/* CV Section */}
+          <section id="cv" className="flex items-center justify-center relative z-10 py-20">
+            <CV />
+          </section>
+
           {/* Transfer Market Section */}
-          <section id="transfer" className="min-h-screen flex items-center justify-center relative z-10">
+          <section id="transfer" className="flex items-center justify-center relative z-10 py-20">
             <TransferMarket />
           </section>
         </>
