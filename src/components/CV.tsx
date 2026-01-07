@@ -127,6 +127,8 @@ export default function CV() {
         'Valgfag: React Native, Python',
         'Java og JavaScript',
         'Systemudvikling',
+        'API-udvikling',
+        'Databasedesign og -optimering',
         'Scrum'
       ],
       color: 'from-purple-500/30 to-purple-600/30'
